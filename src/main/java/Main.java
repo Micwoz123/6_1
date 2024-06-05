@@ -3,7 +3,8 @@ import java.util.Scanner;
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
 class WrongDateOfBirth extends Exception { }
-class WrongSwitch extends Exception { } // Nowy wyjątek dla switch
+class WrongSwitch extends Exception { } 
+class WrongFileRead extends Exception {} 
 class Main {
     public static Scanner scan = new Scanner(System.in);
     public static void main(String[] args) {
@@ -14,9 +15,9 @@ class Main {
                     case '1': exercise1(); break;
                     case '2': exercise2(); break;
                     case '3': exercise3(); break;
-                    case '0': return; // Wyjście z programu
+                    case '0': return;
                     default: 
-                        throw new WrongSwitch(); // Wyrzucenie wyjątku dla nieprawidłowego wyboru
+                        throw new WrongSwitch(); 
                 }
             } catch(IOException e) {
                 System.out.println("Błąd wejścia/wyjścia: " + e.getMessage());
@@ -28,6 +29,8 @@ class Main {
                 System.out.println("Błędna data urodzenia studenta!");
             } catch (WrongSwitch e) { 
                 System.out.println("Nieprawidłowy wybór!");
+            } catch (WrongFileRead e) { 
+                System.out.println("Błąd odczytu danych z pliku!");
             }
         }
     }
@@ -76,22 +79,30 @@ class Main {
         var date = ReadDate();
         (new Service()).addStudent(new Student(name, age, date));
     }
-    public static void exercise2() throws IOException {
-        var students = (new Service()).getStudents();
-        for(Student current : students) {
-            System.out.println(current.ToString());
+    public static void exercise2() throws IOException, WrongFileRead { 
+        try {
+            var students = (new Service()).getStudents();
+            for(Student current : students) {
+                System.out.println(current.ToString());
+            }
+        } catch (WrongFileRead e) { 
+            System.out.println("Błąd odczytu danych z pliku: Niepoprawny format danych.");
         }
     }
-    public static void exercise3() throws IOException {
-        scan.nextLine(); // Dodanie scan.nextLine() do usunięcia znaku końca linii
-        System.out.println("Podaj imie: ");
-        var name = scan.nextLine();
-        var wanted = (new Service()).findStudentByName(name);
-        if(wanted == null)
-            System.out.println("Nie znaleziono...");
-        else {
-            System.out.println("Znaleziono: ");
-            System.out.println(wanted.ToString());
+    public static void exercise3() throws IOException, WrongFileRead { 
+        try {
+            scan.nextLine(); 
+            System.out.println("Podaj imie: ");
+            var name = scan.nextLine();
+            var wanted = (new Service()).findStudentByName(name);
+            if(wanted == null)
+                System.out.println("Nie znaleziono...");
+            else {
+                System.out.println("Znaleziono: ");
+                System.out.println(wanted.ToString());
+            }
+        } catch (IOException e) {
+            throw new WrongFileRead(); 
         }
     }
 }

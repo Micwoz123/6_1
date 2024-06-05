@@ -5,8 +5,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+class WrongFileRead extends Exception {} 
 public class Service {
-
     public void addStudent(Student student) throws IOException {
         var f = new FileWriter("db.txt", true);
         var b = new BufferedWriter(f);
@@ -14,8 +14,7 @@ public class Service {
         b.newLine();
         b.close();
     }
-
-    public Collection<Student> getStudents() throws IOException {
+    public Collection<Student> getStudents() throws IOException, WrongFileRead {
         var ret = new ArrayList<Student>();
         var f = new FileReader("db.txt");
         var reader = new BufferedReader(f);
@@ -24,12 +23,15 @@ public class Service {
             line = reader.readLine();
             if(line == null)
                 break;
-            ret.add(Student.Parse(line));
+            try {
+                ret.add(Student.Parse(line));
+            } catch (Exception e) {
+                throw new WrongFileRead();
+            }
         }
         reader.close();
         return ret;
     }
-
     public Student findStudentByName(String name) throws IOException {
         var students = this.getStudents();
         for(Student current : students) {
