@@ -1,7 +1,6 @@
 
 import java.io.IOException;
 import java.util.Scanner;
-
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
 class WrongDateOfBirth extends Exception { }
@@ -54,8 +53,16 @@ class Main {
     public static String ReadDate() throws WrongDateOfBirth {
         System.out.println("Podaj datę urodzenia DD-MM-YYY");
         var date = scan.nextLine();
-        if(!date.matches("\\d{2}-\\d{2}-\\d{4}"))
+        String[] parts = date.split("-");
+        if (parts.length != 3) {
+            throw new WrongDateOfBirth(); 
+        }
+        int day = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int year = Integer.parseInt(parts[2]);
+        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2024) {
             throw new WrongDateOfBirth();
+        }
         return date;
     }
     public static void exercise1() throws IOException, WrongStudentName, WrongAge, WrongDateOfBirth {
