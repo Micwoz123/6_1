@@ -1,41 +1,46 @@
-
 import java.io.IOException;
 import java.util.Scanner;
 class WrongStudentName extends Exception { }
 class WrongAge extends Exception { }
 class WrongDateOfBirth extends Exception { }
+class WrongSwitch extends Exception { } // Nowy wyjątek dla switch
 class Main {
     public static Scanner scan = new Scanner(System.in);
     public static void main(String[] args) {
         while(true) {
             try {
-                int ex = menu();
+                char ex = menu();
                 switch(ex) {
-                    case 1: exercise1(); break;
-                    case 2: exercise2(); break;
-                    case 3: exercise3(); break;
-                    default: return;
+                    case '1': exercise1(); break;
+                    case '2': exercise2(); break;
+                    case '3': exercise3(); break;
+                    case '0': return; // Wyjście z programu
+                    default: 
+                        throw new WrongSwitch(); // Wyrzucenie wyjątku dla nieprawidłowego wyboru
                 }
             } catch(IOException e) {
+                System.out.println("Błąd wejścia/wyjścia: " + e.getMessage());
             } catch(WrongStudentName e) {
                 System.out.println("Błędne imie studenta!");
             } catch(WrongAge e) {
                 System.out.println("Błędny wiek studenta!");
             } catch(WrongDateOfBirth e) {
                 System.out.println("Błędna data urodzenia studenta!");
+            } catch (WrongSwitch e) { 
+                System.out.println("Nieprawidłowy wybór!");
             }
         }
     }
-    public static int menu() {
+    public static char menu() {
         System.out.println("Wciśnij:");
         System.out.println("1 - aby dodać studenta");
         System.out.println("2 - aby wypisać wszystkich studentów");
         System.out.println("3 - aby wyszukać studenta po imieniu");
         System.out.println("0 - aby wyjść z programu");
-        return scan.nextInt();
+        return scan.nextLine().charAt(0); 
     }
     public static String ReadName() throws WrongStudentName {
-        scan.nextLine();
+        scan.nextLine(); 
         System.out.println("Podaj imie: ");
         String name = scan.nextLine();
         if(name.contains(" "))
@@ -45,7 +50,7 @@ class Main {
     public static int ReadAge() throws WrongAge {
         System.out.println("Podaj wiek: ");
         var age = scan.nextInt();
-        scan.nextLine();
+        scan.nextLine(); 
         if(age < 0 || age > 100)
             throw new WrongAge();
         return age;
@@ -78,7 +83,7 @@ class Main {
         }
     }
     public static void exercise3() throws IOException {
-        scan.nextLine();
+        scan.nextLine(); // Dodanie scan.nextLine() do usunięcia znaku końca linii
         System.out.println("Podaj imie: ");
         var name = scan.nextLine();
         var wanted = (new Service()).findStudentByName(name);
