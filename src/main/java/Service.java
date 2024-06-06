@@ -5,34 +5,29 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-class WrongFileRead extends Exception {} 
+
 public class Service {
     public void addStudent(Student student) throws IOException {
-        var f = new FileWriter("db.txt", true);
-        var b = new BufferedWriter(f);
-        b.append(student.ToString());
-        b.newLine();
-        b.close();
-    }
-    public Collection<Student> getStudents() throws IOException, WrongFileRead {
-        var ret = new ArrayList<Student>();
-        var f = new FileReader("db.txt");
-        var reader = new BufferedReader(f);
-        String line = "";
-        while (true) {
-            line = reader.readLine();
-            if(line == null)
-                break;
-            try {
-                ret.add(Student.Parse(line));
-            } catch (Exception e) {
-                throw new WrongFileRead();
-            }
+        try (var b = new BufferedWriter(new FileWriter("db.txt", true))) {
+            b.append(student.ToString());
+            b.newLine();
         }
-        reader.close();
+    }
+
+    public Collection<Student> getStudents() throws IOException, FileReadError {
+        var ret = new ArrayList<Student>();
+        try (var reader = new BufferedReader(new FileReader("db.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ret.add(Student.Parse(line));
+            }
+        } catch (Exception e) {
+            throw new FileReadError();  
+        }
         return ret;
     }
-    public Student findStudentByName(String name) throws IOException {
+
+    public Student findStudentByName(String name) throws IOException, FileReadError {
         var students = this.getStudents();
         for(Student current : students) {
             if(current.GetName().equals(name))
